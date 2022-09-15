@@ -474,6 +474,31 @@ namespace demon_3t
 
         #endregion
 
+        #region индексатор
+
+        /// <summary>
+        /// Индексатор возвращающий [i,j] элемент матрицы.
+        /// </summary>
+        /// <param name="i"> Номер столбца. </param>
+        /// <param name="j"> Номер строчки. </param>
+        /// <returns> Если индексы в диапазоне матрицы, то вернётся значение, иначе null. </returns>
+        public dynamic? this[int i, int j]
+        {
+            get { return GetValue(i, j); }
+        }
+        /// <summary>
+        /// Возвращает значение [i,j] элемента матрицы.
+        /// </summary>
+        /// <param name="indexI"> Номер столбца. </param>
+        /// <param name="indexJ"> Номер строчки. </param>
+        /// <returns> Если индексы в диапазоне матрицы, то вернётся значение, иначе null. </returns>
+        public dynamic? GetValue(int indexI, int indexJ)
+        {
+            if (m.GetLength(0) < indexI && m.GetLength(1) < indexJ) return m[indexI, indexJ];
+            else return null;
+        }
+
+        #endregion
 
         public override string ToString() // реализовано
         {
