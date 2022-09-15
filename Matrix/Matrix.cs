@@ -392,12 +392,20 @@ namespace demon_3t
 
         #endregion
 
-        #region operator Trans
+        #region operator ! транспонирование матриц
 
-        public static Matrix Trans(ref Matrix a)
+        /// <summary>
+        /// Перегруженый оператор транспонирования матриц
+        /// </summary>
+        /// <param name="matrix1"> Трансонируемая матрица </param>
+        /// <returns> Трансонированная матрица </returns>
+        public static Matrix operator !(Matrix matrix1)
         {
-            a = Trans(a.m);
-            return new Matrix(a.m);
+            return Trans(matrix1);
+        }
+        public static Matrix Trans(Matrix a)
+        {
+            return Trans(a.m);
         }
         private static Matrix Trans(byte[,] a)
         {
