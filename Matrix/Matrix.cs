@@ -500,6 +500,23 @@ namespace demon_3t
 
         #endregion
 
+        #region true и false
+
+        public static bool operator true(Matrix matrix)
+        {
+            if (matrix.m.GetLength(0) == matrix.m.GetLength(1) && matrix.m.GetLength(0) != 0) return true;
+            else return false;
+        }
+
+        public static bool operator false(Matrix matrix)
+        {
+            if (matrix.m.GetLength(0) != matrix.m.GetLength(1) && matrix.m.GetLength(0) == 0) return true;
+            else return false;
+        }
+
+        #endregion
+
+
         public override string ToString() // реализовано
         {
             StringBuilder @string = new();
