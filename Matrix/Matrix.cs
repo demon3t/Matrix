@@ -494,7 +494,7 @@ namespace demon_3t
         /// <returns> Если индексы в диапазоне матрицы, то вернётся значение, иначе null. </returns>
         public dynamic? GetValue(int indexI, int indexJ)
         {
-            if (m.GetLength(0) < indexI && m.GetLength(1) < indexJ) return m[indexI, indexJ];
+            if (m.GetLength(0) > indexI && m.GetLength(1) > indexJ && m.GetLength(0) != 0) return m[indexI, indexJ];
             else return null;
         }
 
@@ -517,6 +517,14 @@ namespace demon_3t
         #endregion
 
 
+        /// <summary>
+        /// Возвращает тип матрицы.
+        /// </summary>
+        /// <returns> Тип матрицы. </returns>
+        public Type GetValueType()
+        {
+            return m.GetType();
+        }
         public override string ToString() // реализовано
         {
             StringBuilder @string = new();
