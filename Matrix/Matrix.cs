@@ -8,8 +8,17 @@ namespace demon_3t
     [StructLayoutAttribute(LayoutKind.Explicit)]
     public struct Matrix : ICloneable, IComparable<Matrix>, IComparable, IEquatable<Matrix>
     {
+        public enum Inversion
+        {
+            Approximations = 0,
+            GaussSeidel = 1,
+            Triangulation = 2,
+        }
+
         [FieldOffset(0)]
         readonly dynamic m;
+
+        public static Inversion inversion = Inversion.Approximations;
 
         #region Конструкторы
 
@@ -513,6 +522,12 @@ namespace demon_3t
             if (matrix.m.GetLength(0) != matrix.m.GetLength(1) && matrix.m.GetLength(0) == 0) return true;
             else return false;
         }
+
+        #endregion
+
+        #region operator ^ обращения матриц
+
+
 
         #endregion
 
