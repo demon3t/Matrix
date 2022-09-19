@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using MatrixGeneric;
+using System.Text;
 
 namespace demon_3tt
 {
     public struct Matrix<T>
+        where T : IMatrix<T>
     {
         private readonly T[,] M;
         public T this[int i, int j]
@@ -42,21 +44,17 @@ namespace demon_3tt
 
         public static Matrix<T> operator +(Matrix<T> matrix1, Matrix<T> matrix2)
         {
-            return Add(matrix1, matrix2);
+            return Addition(matrix1, matrix2);
         }
-        private static Matrix<T> Add(Matrix<T> a, Matrix<T> b)
+        private static Matrix<T> Addition(Matrix<T> a, Matrix<T> b)
         {
             if (a.M.GetLength(0) != b.M.GetLength(0) ||
-                a.M.GetLength(1) != b.M.GetLength(1)) throw new IndexOutOfRangeException("Размеры посылаемых матриц не равны");
+                a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            Matrix<T> result = new Matrix<T>(a.GetLength(0), a.GetLength(1));
-            try
-            {
-                for (int i = 0; i < a.GetLength(0); i++)
-                    for (int j = 0; j < a.GetLength(1); j++)
-                        result[i, j] = (dynamic?)a[i, j] + (dynamic?)b[i, j];
-            }
-            catch { throw new Exception("Тип не поддерживает унарный оператор op_Addition"); }
+            Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < a.GetLength(1); j++)
+                    result[i, j] = a[i, j].Add(a[i, j], b[i, j]);
             return result;
         }
         #endregion
@@ -70,16 +68,12 @@ namespace demon_3tt
         private static Matrix<T> Subtract(Matrix<T> a, Matrix<T> b)
         {
             if (a.M.GetLength(0) != b.M.GetLength(0) ||
-                a.M.GetLength(1) != b.M.GetLength(1)) throw new IndexOutOfRangeException("Размеры посылаемых матриц не равны");
+                a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            Matrix<T> result = new Matrix<T>(a.GetLength(0), a.GetLength(1));
-            try
-            {
+            Matrix<T> result = new (a.GetLength(0), a.GetLength(1));
                 for (int i = 0; i < a.GetLength(0); i++)
                     for (int j = 0; j < a.GetLength(1); j++)
-                        result[i, j] = (dynamic?)a[i, j] - (dynamic?)b[i, j];
-            }
-            catch { throw new Exception("Тип не поддерживает унарный оператор op_Subtraction"); }
+                        result[i, j] = a[i, j].Subtract(a[i, j], b[i, j]);
             return result;
         }
 

@@ -11,9 +11,4 @@ Random[,] vv = new Random[,]
     { new Random(), new Random(), new Random() },
     { new Random(), new Random(), new Random() }};
 
-Matrix<Complex> matrix2 = cmpx;
-Matrix<Random> matrix3 = vv;
 
-matrix2[1, 1] = new Complex(5, 5);
-
-Console.WriteLine(matrix2 + matrix2);
