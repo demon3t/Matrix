@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Generic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,8 @@ namespace MatrixGeneric
         public T Subtract(T obj, T obj1);
         public T Multiply(T obj, T obj1);
         public T Divide(T obj, T obj1);
+
+        public T GetValue(int i, int j);
+        public T SetValue(int i, int j);
     }
 }

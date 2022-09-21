@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aardvark.Base" Version="5.2.12" />
+    <PackageReference Include="HandyControls" Version="3.4.2" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using MatrixGeneric;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace demon_3t
 {
     [StructLayoutAttribute(LayoutKind.Explicit)]
-    public struct Matrix : ICloneable, IComparable<Matrix>, IComparable, IEquatable<Matrix>
+    public struct Matrix : ICloneable, IEquatable<Matrix>
     {
         public enum Inversion
         {
@@ -16,75 +17,92 @@ namespace demon_3t
         }
 
         [FieldOffset(0)]
-        readonly dynamic m;
+        readonly dynamic[,] m;
 
         public static Inversion inversion = Inversion.Approximations;
 
         #region Конструкторы
 
+        public Matrix(int i, int j)
+        {
+            m = new dynamic[i, j];
+        }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: byte[,] (System.Byte[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(byte[,] input) : this()
+        public Matrix(byte[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: short[,] (System.Int16[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(short[,] input) : this()
+        public Matrix(short[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: int[,] (System.Int32[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(int[,] input) : this()
+        public Matrix(int[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: long[,] (System.Int64[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(long[,] input) : this()
+        public Matrix(long[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: float[,] (System.Single[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(float[,] input) : this()
+        public Matrix(float[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: double[,] (System.Double[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(double[,] input) : this()
+        public Matrix(double[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: decimal[,] (System.Decimal[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(decimal[,] input) : this()
+        public Matrix(decimal[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: Complex[,] (System.Complex[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(Complex[,] input) : this()
+        public Matrix(Complex[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
-            m = input;
+            FillInstance(input);
+        }
+        /// <summary>
+        /// Конструктор, кторый принимает тип матрицы: IMatrix[,] (IMatrix[,]).
+        /// </summary>
+        /// <param name="input"> Матрица данных. </param>
+        public Matrix(IMatrix[,] input) : this(input.GetLength(0), input.GetLength(1))
+        {
+            FillInstance(input);
+        }
+
+        private Matrix(dynamic[,] input) : this(input.GetLength(0), input.GetLength(1))
+        {
+            FillInstance(input);
         }
 
         #endregion
@@ -149,7 +167,7 @@ namespace demon_3t
                 a.m.GetLength(1) != b.m.GetLength(1))
                 throw new IndexOutOfRangeException("Размеры посылаемых матриц не равны");
 
-            return Add(a.m, b.m);
+            return Add(a, b);
         }
         private static Matrix Add(byte[,] a, byte[,] b)
         {
@@ -223,6 +241,15 @@ namespace demon_3t
                     result[i, j] = a[i, j] + b[i, j];
             return new Matrix(result);
         }
+        private static Matrix Add(IMatrix[,] a, IMatrix[,] b)
+        {
+            IMatrix[,] result = new IMatrix[a.GetLength(0), a.GetLength(1)];
+
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < a.GetLength(1); j++)
+                    result[i, j] = (IMatrix)a[i, j].Add(a[i, j], b[i, j]);
+            return new Matrix(result);
+        }
 
         #endregion
 
@@ -241,7 +268,7 @@ namespace demon_3t
                 a.m.GetLength(1) != b.m.GetLength(1))
                 throw new IndexOutOfRangeException("Размеры посылаемых матриц не равны");
 
-            return Sub(a.m, b.m);
+            return Sub(a, b);
         }
         private static Matrix Sub(byte[,] a, byte[,] b)
         {
@@ -307,6 +334,15 @@ namespace demon_3t
                     result[i, j] = a[i, j] - b[i, j];
             return new Matrix(result);
         }
+        private static Matrix Sub(IMatrix[,] a, IMatrix[,] b)
+        {
+            IMatrix[,] result = new IMatrix[a.GetLength(0), a.GetLength(1)];
+
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < a.GetLength(1); j++)
+                    result[i, j] = (IMatrix)a[i, j].Subtract(a[i, j], b[i, j]);
+            return new Matrix(result);
+        }
 
         #endregion
 
@@ -324,7 +360,7 @@ namespace demon_3t
             if (a.m.GetLength(1) != b.m.GetLength(0))
                 throw new IndexOutOfRangeException("Умножение невозможно, не корректные размеры матриц");
 
-            return Mul(a.m, b.m);
+            return Mul(a, b);
         }
         private static Matrix Mul(byte[,] a, byte[,] b)
         {
@@ -398,6 +434,15 @@ namespace demon_3t
                         result[i, j] += a[i, k] * b[k, j];
             return new Matrix(result);
         }
+        private static Matrix Mul(IMatrix[,] a, IMatrix[,] b)
+        {
+            IMatrix[,] result = new IMatrix[a.GetLength(0), b.GetLength(1)];
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < b.GetLength(1); j++)
+                    for (int k = 0; k < b.GetLength(0); k++)
+                        result[i, j] = (IMatrix)a[i, k].Add(result[i, j], a[i, k].Multiply(a[i, k], b[k, j]));
+            return new Matrix(result);
+        }
 
         #endregion
 
@@ -414,7 +459,7 @@ namespace demon_3t
         }
         public static Matrix Trans(Matrix a)
         {
-            return Trans(a.m);
+            return Trans(a);
         }
         private static Matrix Trans(byte[,] a)
         {
@@ -480,31 +525,33 @@ namespace demon_3t
                     result[i, j] = a[j, i];
             return new Matrix(result);
         }
-
+        private static Matrix Trans(IMatrix[,] a)
+        {
+            IMatrix[,] result = new IMatrix[a.GetLength(1), a.GetLength(0)];
+            for (int i = 0; i < a.GetLength(1); i++)
+                for (int j = 0; j < a.GetLength(0); j++)
+                    result[i, j] = a[j, i];
+            return new Matrix(result);
+        }
         #endregion
 
         #region индексатор
 
-        /// <summary>
-        /// Индексатор возвращающий [i,j] элемент матрицы.
-        /// </summary>
-        /// <param name="i"> Номер столбца. </param>
-        /// <param name="j"> Номер строчки. </param>
-        /// <returns> Если индексы в диапазоне матрицы, то вернётся значение, иначе null. </returns>
-        public dynamic? this[int i, int j]
+        public dynamic this[int i, int j]
         {
-            get { return GetValue(i, j); }
-        }
-        /// <summary>
-        /// Возвращает значение [i,j] элемента матрицы.
-        /// </summary>
-        /// <param name="indexI"> Номер столбца. </param>
-        /// <param name="indexJ"> Номер строчки. </param>
-        /// <returns> Если индексы в диапазоне матрицы, то вернётся значение, иначе null. </returns>
-        public dynamic? GetValue(int indexI, int indexJ)
-        {
-            if (m.GetLength(0) > indexI && m.GetLength(1) > indexJ && m.GetLength(0) != 0) return m[indexI, indexJ];
-            else return null;
+            get
+            {
+                if (i < 0 || i >= m.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива i = {i}.");
+                if (j < 0 || j >= m.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива j = {j}.");
+                return m[i, j];
+            }
+            set
+            {
+                if (i < 0 || i >= m.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива i = {i}.");
+                if (j < 0 || j >= m.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива j = {j}.");
+                if (value == null) throw new ArgumentNullException(nameof(value));
+                m[i, j] = value;
+            }
         }
 
         #endregion
@@ -523,6 +570,7 @@ namespace demon_3t
             else return false;
         }
 
+
         #endregion
 
         #region operator ^ обращения матриц
@@ -531,6 +579,12 @@ namespace demon_3t
 
         #endregion
 
+        private void FillInstance(dynamic matrix)
+        {
+            for (int i = 0; i < matrix.GetLength(0); i++)
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                    this.m[i, j] = matrix[i, j];
+        }
 
         /// <summary>
         /// Возвращает тип матрицы.
@@ -540,6 +594,7 @@ namespace demon_3t
         {
             return m.GetType();
         }
+
         public override string ToString() // реализовано
         {
             StringBuilder @string = new();
@@ -571,23 +626,20 @@ namespace demon_3t
             if (this.m.GetLength(0) != other.m.GetLength(0) ||
                 this.m.GetLength(1) != other.m.GetLength(1)) return false;
 
-            for (int i = 0; i < other.m.GetLength; i++)
-                for (int j = 0; j < other.m.GetLength; j++)
+            for (int i = 0; i < other.m.GetLength(0); i++)
+                for (int j = 0; j < other.m.GetLength(1); j++)
                     if (m[i, j] != other.m[i, j])
                         return false;
 
             return true;
         }
-        public int CompareTo(Matrix other) // не реализовано
-        {
-            return 0;
-        }
-
-        public int CompareTo(object? obj) // не реализовано
-        {
-            if (obj == null) return -1;
-            if (obj is Matrix) return CompareTo((Matrix)obj);
-            return -1;
-        }
     }
+    public interface IMatrix
+    {
+        public object Add(object first, object second);
+        public object Subtract(object first, object second);
+        public object Multiply(object first, object second);
+        public object Divide(object first, object second);
+    }
+
 }

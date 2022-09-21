@@ -1,16 +1,27 @@
 ﻿using MatrixGeneric;
+using System.Collections;
 using System.Text;
 
-namespace demon_3tt
+namespace Generic
 {
     public struct Matrix<T>
-        where T : IMatrix<T>
+        where T : struct
     {
         private readonly T[,] M;
         public T this[int i, int j]
         {
-            get { return M[i, j]; }
-            set { M[i, j] = value; }
+            get
+            {
+                if (i < 0 || i >= M.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива i = {i}.");
+                if (j < 0 || j >= M.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива j = {j}.");
+                return M[i, j];
+            }
+            set
+            {
+                if (i < 0 || i >= M.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива i = {i}.");
+                if (j < 0 || j >= M.GetLength(0)) throw new ArgumentOutOfRangeException($"Параметр не в диапазоне массива j = {j}.");
+                M[i, j] = value;
+            }
         }
 
         #region Конструкторы
@@ -54,7 +65,7 @@ namespace demon_3tt
             Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = a[i, j].Add(a[i, j], b[i, j]);
+                    result[i, j] = (dynamic?)a[i, j] + (dynamic?)b[i, j];
             return result;
         }
         #endregion
@@ -70,14 +81,15 @@ namespace demon_3tt
             if (a.M.GetLength(0) != b.M.GetLength(0) ||
                 a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            Matrix<T> result = new (a.GetLength(0), a.GetLength(1));
-                for (int i = 0; i < a.GetLength(0); i++)
-                    for (int j = 0; j < a.GetLength(1); j++)
-                        result[i, j] = a[i, j].Subtract(a[i, j], b[i, j]);
+            Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < a.GetLength(1); j++)
+                    result[i, j] = (dynamic?)a[i, j] - (dynamic?)b[i, j];
             return result;
         }
 
         #endregion
+
 
         private int GetLength(int v)
         {
@@ -96,10 +108,12 @@ namespace demon_3tt
             for (int i = 0; i < M.GetLength(0); i++)
             {
                 for (int j = 0; j < M.GetLength(1); j++)
-                    @string.Append(M[i, j]?.ToString() + " ");
+                    @string.Append(M[i, j].ToString() + " ");
                 @string.AppendLine();
             }
             return @string.ToString();
         }
+        
     }
+
 }
