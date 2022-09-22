@@ -34,7 +34,6 @@ namespace Generic
         {
             FillInstance(matrix);
         }
-
         #endregion
 
         #region Операторы преобразования

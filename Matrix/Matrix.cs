@@ -1,5 +1,4 @@
-﻿using MatrixGeneric;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,7 +6,7 @@ using System.Text;
 namespace demon_3t
 {
     [StructLayoutAttribute(LayoutKind.Explicit)]
-    public struct Matrix : ICloneable, IEquatable<Matrix>
+    public struct Matrix<T> : ICloneable, IEquatable<Matrix<T>>
     {
         public enum Inversion
         {
@@ -17,7 +16,7 @@ namespace demon_3t
         }
 
         [FieldOffset(0)]
-        readonly dynamic[,] m;
+        readonly T[,] m;
 
         public static Inversion inversion = Inversion.Approximations;
 
@@ -25,7 +24,7 @@ namespace demon_3t
 
         public Matrix(int i, int j)
         {
-            m = new dynamic[i, j];
+            m = new T[i, j];
         }
         /// <summary>
         /// Конструктор, кторый принимает тип матрицы: byte[,] (System.Byte[,]).
@@ -95,7 +94,7 @@ namespace demon_3t
         /// Конструктор, кторый принимает тип матрицы: IMatrix[,] (IMatrix[,]).
         /// </summary>
         /// <param name="input"> Матрица данных. </param>
-        public Matrix(IMatrix[,] input) : this(input.GetLength(0), input.GetLength(1))
+        public Matrix(IMatrix<T>[,] input) : this(input.GetLength(0), input.GetLength(1))
         {
             FillInstance(input);
         }
@@ -105,11 +104,16 @@ namespace demon_3t
             FillInstance(input);
         }
 
+        public Matrix(T[,] m)
+        {
+            this.m = m;
+        }
+
         #endregion
 
         #region Оператор преобразования
 
-        public static explicit operator dynamic[,](Matrix matrix)
+        public static explicit operator T[,](Matrix<T> matrix)
         {
             return matrix.m;
         }
@@ -118,47 +122,51 @@ namespace demon_3t
 
         #region Оператор образования
 
-        public static explicit operator Matrix(byte[,] input)
+        public static implicit operator Matrix<T>(byte[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(short[,] input)
+        public static implicit operator Matrix<T>(short[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(int[,] input)
+        public static implicit operator Matrix<T>(int[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(long[,] input)
+        public static implicit operator Matrix<T>(long[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(float[,] input)
+        public static implicit operator Matrix<T>(float[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(double[,] input)
+        public static implicit operator Matrix<T>(double[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(decimal[,] input)
+        public static implicit operator Matrix<T>(decimal[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
         }
-        public static explicit operator Matrix(Complex[,] input)
+        public static implicit operator Matrix<T>(Complex[,] input)
         {
-            return new Matrix(input);
+            return new Matrix<T>(input);
+        }
+        public static implicit operator Matrix<T>(IMatrix<T>[,] input)
+        {
+            return new Matrix<T>(input);
         }
 
         #endregion
 
         #region operator + сложение матриц
-        public static Matrix operator +(Matrix matrix1, Matrix matrix2)
+        public static Matrix<T> operator +(Matrix<T> matrix1, Matrix<T> matrix2)
         {
             return Add(matrix1, matrix2);
         }
-        public static Matrix Add(Matrix a, Matrix b)
+        public static Matrix<T> Add(Matrix<T> a, Matrix<T> b)
         {
             if (a.m.GetType() != b.m.GetType())
                 throw new TypeAccessException("Типы посылаемых матриц не равны");
@@ -169,97 +177,98 @@ namespace demon_3t
 
             return Add(a, b);
         }
-        private static Matrix Add(byte[,] a, byte[,] b)
+        private static Matrix<T> Add(byte[,] a, byte[,] b)
         {
             byte[,] result = new byte[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = (byte)(a[i, j] + b[i, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(short[,] a, short[,] b)
+        private static Matrix<T> Add(short[,] a, short[,] b)
         {
             short[,] result = new short[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = (short)(a[i, j] + b[i, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(int[,] a, int[,] b)
+        private static Matrix<T> Add(int[,] a, int[,] b)
         {
             int[,] result = new int[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(long[,] a, long[,] b)
+        private static Matrix<T> Add(long[,] a, long[,] b)
         {
             long[,] result = new long[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(float[,] a, float[,] b)
+        private static Matrix<T> Add(float[,] a, float[,] b)
         {
             float[,] result = new float[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(double[,] a, double[,] b)
+        private static Matrix<T> Add(double[,] a, double[,] b)
         {
             double[,] result = new double[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(decimal[,] a, decimal[,] b)
+        private static Matrix<T> Add(decimal[,] a, decimal[,] b)
         {
             decimal[,] result = new decimal[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(Complex[,] a, Complex[,] b)
+        private static Matrix<T> Add(Complex[,] a, Complex[,] b)
         {
             Complex[,] result = new Complex[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] + b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Add(IMatrix[,] a, IMatrix[,] b)
+
+        private static Matrix<T> Add(IMatrix<T>[,] a, IMatrix<T>[,] b)
         {
-            IMatrix[,] result = new IMatrix[a.GetLength(0), a.GetLength(1)];
+            IMatrix<T>[,] result = new IMatrix<T>[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = (IMatrix)a[i, j].Add(a[i, j], b[i, j]);
-            return new Matrix(result);
+                    result[i, j] = (IMatrix<T>)a[i, j].Add((T)a[i, j], (T)b[i, j]);
+            return new Matrix<T>(result);
         }
 
         #endregion
 
         #region operator - вычитание матриц
 
-        public static Matrix operator -(Matrix matrix1, Matrix matrix2)
+        public static Matrix<T> operator -(Matrix<T> matrix1, Matrix<T> matrix2)
         {
             return Sub(matrix1, matrix2);
         }
-        public static Matrix Sub(Matrix a, Matrix b)
+        public static Matrix<T> Sub(Matrix<T> a, Matrix<T> b)
         {
             if (a.m.GetType() != b.m.GetType())
                 throw new TypeAccessException("Типы посылаемых матриц не равны");
@@ -270,89 +279,89 @@ namespace demon_3t
 
             return Sub(a, b);
         }
-        private static Matrix Sub(byte[,] a, byte[,] b)
+        private static Matrix<T> Sub(byte[,] a, byte[,] b)
         {
             byte[,] result = new byte[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = (byte)(a[i, j] - b[i, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(short[,] a, short[,] b)
+        private static Matrix<T> Sub(short[,] a, short[,] b)
         {
             short[,] result = new short[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = (short)(a[i, j] - b[i, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(int[,] a, int[,] b)
+        private static Matrix<T> Sub(int[,] a, int[,] b)
         {
             int[,] result = new int[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(long[,] a, long[,] b)
+        private static Matrix<T> Sub(long[,] a, long[,] b)
         {
             long[,] result = new long[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(float[,] a, float[,] b)
+        private static Matrix<T> Sub(float[,] a, float[,] b)
         {
             float[,] result = new float[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(double[,] a, double[,] b)
+        private static Matrix<T> Sub(double[,] a, double[,] b)
         {
             double[,] result = new double[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(decimal[,] a, decimal[,] b)
+        private static Matrix<T> Sub(decimal[,] a, decimal[,] b)
         {
             decimal[,] result = new decimal[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(Complex[,] a, Complex[,] b)
+        private static Matrix<T> Sub(Complex[,] a, Complex[,] b)
         {
             Complex[,] result = new Complex[a.GetLength(0), a.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
                     result[i, j] = a[i, j] - b[i, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Sub(IMatrix[,] a, IMatrix[,] b)
+        private static Matrix<T> Sub(IMatrix<T>[,] a, IMatrix<T>[,] b)
         {
-            IMatrix[,] result = new IMatrix[a.GetLength(0), a.GetLength(1)];
+            IMatrix<T>[,] result = new IMatrix<T>[a.GetLength(0), a.GetLength(1)];
 
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = (IMatrix)a[i, j].Subtract(a[i, j], b[i, j]);
-            return new Matrix(result);
+                    result[i, j] = (IMatrix<T>)a[i, j].Subtract((T)a[i, j], (T)b[i, j]);
+            return new Matrix<T>(result);
         }
 
         #endregion
 
         #region operator * умножение матриц
 
-        public static Matrix operator *(Matrix matrix1, Matrix matrix2)
+        public static Matrix<T> operator *(Matrix<T> matrix1, Matrix<T> matrix2)
         {
             return Mul(matrix1, matrix2);
         }
-        public static Matrix Mul(Matrix a, Matrix b)
+        public static Matrix<T> Mul(Matrix<T> a, Matrix<T> b)
         {
             if (a.m.GetType() != b.m.GetType())
                 throw new TypeAccessException("Типы посылаемых матриц не равны");
@@ -362,86 +371,86 @@ namespace demon_3t
 
             return Mul(a, b);
         }
-        private static Matrix Mul(byte[,] a, byte[,] b)
+        private static Matrix<T> Mul(byte[,] a, byte[,] b)
         {
             byte[,] result = new byte[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += (byte)(a[i, k] * b[k, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(short[,] a, short[,] b)
+        private static Matrix<T> Mul(short[,] a, short[,] b)
         {
             short[,] result = new short[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += (short)(a[i, k] * b[k, j]);
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(int[,] a, int[,] b)
+        private static Matrix<T> Mul(int[,] a, int[,] b)
         {
             int[,] result = new int[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(long[,] a, long[,] b)
+        private static Matrix<T> Mul(long[,] a, long[,] b)
         {
             long[,] result = new long[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(float[,] a, float[,] b)
+        private static Matrix<T> Mul(float[,] a, float[,] b)
         {
             float[,] result = new float[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(double[,] a, double[,] b)
+        private static Matrix<T> Mul(double[,] a, double[,] b)
         {
             double[,] result = new double[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(decimal[,] a, decimal[,] b)
+        private static Matrix<T> Mul(decimal[,] a, decimal[,] b)
         {
             decimal[,] result = new decimal[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(Complex[,] a, Complex[,] b)
+        private static Matrix<T> Mul(Complex[,] a, Complex[,] b)
         {
             Complex[,] result = new Complex[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
                         result[i, j] += a[i, k] * b[k, j];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Mul(IMatrix[,] a, IMatrix[,] b)
+        private static Matrix<T> Mul(IMatrix<T>[,] a, IMatrix<T>[,] b)
         {
-            IMatrix[,] result = new IMatrix[a.GetLength(0), b.GetLength(1)];
+            IMatrix<T>[,] result = new IMatrix<T>[a.GetLength(0), b.GetLength(1)];
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < b.GetLength(1); j++)
                     for (int k = 0; k < b.GetLength(0); k++)
-                        result[i, j] = (IMatrix)a[i, k].Add(result[i, j], a[i, k].Multiply(a[i, k], b[k, j]));
-            return new Matrix(result);
+                        result[i, j] = (IMatrix<T>)a[i, k].Add((T)result[i, j], a[i, k].Multiply((T)a[i, k], (T)b[k, j]));
+            return new Matrix<T>(result);
         }
 
         #endregion
@@ -453,85 +462,85 @@ namespace demon_3t
         /// </summary>
         /// <param name="matrix1"> Трансонируемая матрица </param>
         /// <returns> Трансонированная матрица </returns>
-        public static Matrix operator !(Matrix matrix1)
+        public static Matrix<T> operator !(Matrix<T> matrix1)
         {
             return Trans(matrix1);
         }
-        public static Matrix Trans(Matrix a)
+        public static Matrix<T> Trans(Matrix<T> a)
         {
             return Trans(a);
         }
-        private static Matrix Trans(byte[,] a)
+        private static Matrix<T> Trans(byte[,] a)
         {
             byte[,] result = new byte[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(short[,] a)
+        private static Matrix<T> Trans(short[,] a)
         {
             short[,] result = new short[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(int[,] a)
+        private static Matrix<T> Trans(int[,] a)
         {
             int[,] result = new int[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(long[,] a)
+        private static Matrix<T> Trans(long[,] a)
         {
             long[,] result = new long[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(float[,] a)
+        private static Matrix<T> Trans(float[,] a)
         {
             float[,] result = new float[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(double[,] a)
+        private static Matrix<T> Trans(double[,] a)
         {
             double[,] result = new double[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(decimal[,] a)
+        private static Matrix<T> Trans(decimal[,] a)
         {
             decimal[,] result = new decimal[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(Complex[,] a)
+        private static Matrix<T> Trans(Complex[,] a)
         {
             Complex[,] result = new Complex[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
-        private static Matrix Trans(IMatrix[,] a)
+        private static Matrix<T> Trans(IMatrix<T>[,] a)
         {
-            IMatrix[,] result = new IMatrix[a.GetLength(1), a.GetLength(0)];
+            IMatrix<T>[,] result = new IMatrix<T>[a.GetLength(1), a.GetLength(0)];
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
-            return new Matrix(result);
+            return new Matrix<T>(result);
         }
         #endregion
 
@@ -558,13 +567,13 @@ namespace demon_3t
 
         #region true и false
 
-        public static bool operator true(Matrix matrix)
+        public static bool operator true(Matrix<T> matrix)
         {
             if (matrix.m.GetLength(0) == matrix.m.GetLength(1) && matrix.m.GetLength(0) != 0) return true;
             else return false;
         }
 
-        public static bool operator false(Matrix matrix)
+        public static bool operator false(Matrix<T> matrix)
         {
             if (matrix.m.GetLength(0) != matrix.m.GetLength(1) && matrix.m.GetLength(0) == 0) return true;
             else return false;
@@ -610,16 +619,12 @@ namespace demon_3t
         {
             if (obj == null) return false;
             if (obj.GetHashCode() != GetHashCode()) return false;
-            if (obj is Matrix) return Equals((Matrix)obj);
+            if (obj is Matrix<T>) return Equals((Matrix<T>)obj);
             return false;
         }
-        public override int GetHashCode() // реализовано
-        {
-            if (m.GetLength(0) == 0 && m.GetLength(1) == 0) return 0;
-            return m[0, 0] ^ m[m.GetLength(0) - 1, m.GetLength(1) - 1] ^ m[m.GetLength(0) - 1, 0] ^ m[0, m.GetLength(1) - 1];
-        }
-        public object Clone() => new Matrix(m); // реализовано
-        public bool Equals(Matrix other) // реализовано
+
+        public object Clone() => new Matrix<T>(m); // реализовано
+        public bool Equals(Matrix<T> other) // реализовано
         {
             if (this.m.GetType() != other.m.GetType()) return false;
 
@@ -628,18 +633,19 @@ namespace demon_3t
 
             for (int i = 0; i < other.m.GetLength(0); i++)
                 for (int j = 0; j < other.m.GetLength(1); j++)
-                    if (m[i, j] != other.m[i, j])
+                    if (m[i, j].Equals((IMatrix<T>)other.m[i, j]))
                         return false;
 
             return true;
         }
     }
-    public interface IMatrix
+    public interface IMatrix<T>
     {
-        public object Add(object first, object second);
-        public object Subtract(object first, object second);
-        public object Multiply(object first, object second);
-        public object Divide(object first, object second);
+        public T Add(T first, T second);
+        public T Subtract(T first, T second);
+        public T Multiply(T first, T second);
+        public T Divide(T first, T second);
+        public bool Equals(T first);
     }
 
 }

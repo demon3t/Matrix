@@ -1,5 +1,4 @@
-﻿using Generic;
-using demon_3t;
+﻿using demon_3t;
 using System.Numerics;
 using System.Collections;
 
@@ -17,40 +16,58 @@ Complex[,] cmpx1 = new Complex[,]
     { new Complex(15,69), new Complex(15,65), new Complex(16,81) },
     { new Complex(15,98), new Complex(76,48), new Complex(15,61) }};
 
-Random[,] vv = new Random[,]
-    {{new Random(), new Random(), new Random() },
-    { new Random(), new Random(), new Random() },
-    { new Random(), new Random(), new Random() }};
-
-Matrix<Complex> matrix1 = cmpx1;
-Matrix<Complex> matrix = cmpx;
+Voltage[,] vv = new Voltage[,]
+    {{new Voltage(15), new Voltage(45), new Voltage(4) },
+    { new Voltage(45), new Voltage(34), new Voltage(7) },
+    { new Voltage(4), new Voltage(5), new Voltage(9) }};
 
 
-Console.WriteLine(matrix1 + matrix1 - matrix);
+
+Matrix<Voltage> matrix1 = vv;
 
 
-class Test : IMatrix
+Console.WriteLine(matrix1 - matrix1);
+
+
+public class Voltage : IMatrix<Voltage>
 {
-    double Value { get; set; }
 
-    public object Add(object first, object second)
+    public Voltage(int value)
     {
-        return new Test() { Value = first. + second };
+        Value = value;
     }
 
-    public object Divide(object first, object second)
+    public int Value;
+    public Voltage Add(Voltage first, Voltage second)
     {
-        throw new NotImplementedException();
+        return new Voltage(first.Value + second.Value);
+    }
+    public Voltage Subtract(Voltage first, Voltage second)
+    {
+        return new Voltage(first.Value - second.Value);
+    }
+    public Voltage Multiply(Voltage first, Voltage second)
+    {
+        return new Voltage(first.Value * second.Value);
+    }
+    public Voltage Divide(Voltage first, Voltage second)
+    {
+        return new Voltage(first.Value / second.Value);
+    }
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+    public override bool Equals(object? obj)
+    {
+        return base.Equals(obj);
     }
 
-    public object Multiply(object first, object second)
+    public bool Equals(Voltage first)
     {
-        throw new NotImplementedException();
-    }
-
-    public object Subtract(object first, object second)
-    {
-        throw new NotImplementedException();
+        return object.Equals(this, first);
     }
 }
+
+
     
