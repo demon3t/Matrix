@@ -99,7 +99,7 @@ namespace Generic
         {
             try
             {
-                return Subtract<T>(T m1 as matrix1, matrix2);
+                return Subtract<T>(matrix1, matrix2);
             }
             catch
             {
