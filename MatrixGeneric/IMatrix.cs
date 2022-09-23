@@ -9,12 +9,9 @@ namespace MatrixGeneric
 {
     public interface IMatrix<T>
     {
-        public T Add(T obj, T obj1);
-        public T Subtract(T obj, T obj1);
-        public T Multiply(T obj, T obj1);
-        public T Divide(T obj, T obj1);
-
-        public T GetValue(int i, int j);
-        public T SetValue(int i, int j);
+        public T Add(T first, T second);
+        public T Subtract(T first, T second);
+        public T Multiply(T first, T second);
+        public T Divide(T first, T second);
     }
 }

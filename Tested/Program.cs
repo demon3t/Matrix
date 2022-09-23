@@ -1,10 +1,8 @@
-﻿using demon_3t;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Collections;
+using Generic;
+using MatrixGeneric;
 
-BitArray bA = new BitArray(9000000);
-Console.WriteLine(sizeof(int));
-Console.ReadLine();
 
 Complex[,] cmpx = new Complex[,]
     {{new Complex(0,0), new Complex(0,1), new Complex(0,2) },
@@ -58,14 +56,9 @@ public class Voltage : IMatrix<Voltage>
     {
         return Value.ToString();
     }
-    public override bool Equals(object? obj)
+    public override int GetHashCode()
     {
-        return base.Equals(obj);
-    }
-
-    public bool Equals(Voltage first)
-    {
-        return object.Equals(this, first);
+        return Value ^ Value ^ Value;
     }
 }
 
