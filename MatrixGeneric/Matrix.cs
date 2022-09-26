@@ -130,7 +130,7 @@ namespace MatrixGeneric
         }
         public static Matrix<T> Transposition(Matrix<T> a)
         {
-            Matrix<T> result = new (a.GetLength(1), a.GetLength(0));
+            Matrix<T> result = new(a.GetLength(1), a.GetLength(0));
             for (int i = 0; i < a.GetLength(1); i++)
                 for (int j = 0; j < a.GetLength(0); j++)
                     result[i, j] = a[j, i];
@@ -152,12 +152,22 @@ namespace MatrixGeneric
 
         public static Matrix<T> InversionTriangulation(Matrix<T> a)
         {
-            var result = new Matrix<T>(a.GetLength(0), a.GetLength(1));
+            if (!a.CheckNullElements(a)) throw new ArgumentNullException(nameof(a));
+            if (a.M.GetLength(0) != a.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            return new Matrix<T>();
+            
+            return a;
         }
 
         #endregion
+
+        public bool CheckNullElements(Matrix<T> matrix)
+        {
+            for (int i = 0; i < matrix.GetLength(0); i++)
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                    if (matrix[i, j] == null) return false;
+            return true;
+        }
 
         public bool CheckInRange(int? i = null, int? j = null)
         {
@@ -170,6 +180,7 @@ namespace MatrixGeneric
             else
                 return i < 0 || i >= M.GetLength(0) ? false : true;
         }
+
         private int GetLength(int v)
         {
             return M.GetLength(v);
