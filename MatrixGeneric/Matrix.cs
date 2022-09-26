@@ -11,7 +11,7 @@ namespace MatrixGeneric
         Triangulation = 2,
     }
 
-    public struct Matrix<T> where T : IMatrixOperation<T>
+    public struct Matrix<T> where T : notnull, IMatrixOperation<T>
     {
         private readonly T[,] M;
         public T this[int i, int j]
