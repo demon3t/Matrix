@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using System.Collections;
-using Generic;
 using MatrixGeneric;
 
 
@@ -24,10 +23,10 @@ Voltage[,] vv = new Voltage[,]
 Matrix<Voltage> matrix1 = vv;
 
 
-Console.WriteLine(matrix1 - matrix1);
+Console.WriteLine(matrix1 * matrix1);
 
 
-public class Voltage : IMatrix<Voltage>
+public class Voltage : IMatrixOperation<Voltage>
 {
 
     public Voltage(int value)

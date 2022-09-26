@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MatrixGeneric\MatrixGeneric.csproj" />
-    <ProjectReference Include="..\Matrix\Matrix.csproj" />
   </ItemGroup>
 
 </Project>

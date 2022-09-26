@@ -2,9 +2,16 @@
 using System.Collections;
 using System.Text;
 
-namespace Generic
+namespace MatrixGeneric
 {
-    public struct Matrix<T>
+    public enum MethodInversion
+    {
+        Approximations = 0,
+        GaussSeidel = 1,
+        Triangulation = 2,
+    }
+
+    public struct Matrix<T> where T : IMatrixOperation<T>
     {
         private readonly T[,] M;
         public T this[int i, int j]
@@ -21,16 +28,11 @@ namespace Generic
             }
         }
 
-        public bool CheckInRange(int? i = null, int? j = null)
+        public static MethodInversion Invers;
+
+        static Matrix()
         {
-            if (i == null && j == null)
-                return false;
-            if (i != null && j != null)
-                return (i < 0 || i >= M.GetLength(0)) && ((j < 0 || j >= M.GetLength(0))) ? false : true;
-            if (i != null)
-                return j < 0 || j >= M.GetLength(0) ? false : true;
-            else
-                return i < 0 || i >= M.GetLength(0) ? false : true;
+            Invers = MethodInversion.Triangulation;
         }
 
         #region Конструкторы
@@ -43,32 +45,28 @@ namespace Generic
         {
             FillInstance(matrix);
         }
-        public Matrix(IMatrix<T>[,] matrix) : this(matrix.GetLength(0), matrix.GetLength(1))
-        {
-            FillInstance(matrix);
-        }
         #endregion
 
-        #region Операторы преобразования
+        #region оператор преобразования
 
         public static implicit operator T[,](Matrix<T> matrix)
         {
             return matrix.M;
         }
-
         public static implicit operator Matrix<T>(T[,] matrix)
         {
             return new Matrix<T>(matrix);
         }
+
         #endregion
 
         #region operator + сложение матриц
 
         public static Matrix<T> operator +(Matrix<T> matrix1, Matrix<T> matrix2)
         {
-            return Addition(matrix1, matrix2);
+            return Add(matrix1, matrix2);
         }
-        private static Matrix<T> Addition(Matrix<T> a, Matrix<T> b)
+        public static Matrix<T> Add(Matrix<T> a, Matrix<T> b)
         {
             if (a.M.GetLength(0) != b.M.GetLength(0) ||
                 a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
@@ -76,77 +74,121 @@ namespace Generic
             Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = (dynamic?)a[i, j] + (dynamic?)b[i, j];
+                    result[i, j] = a[i, j].Add(a[i, j], b[i, j]);
             return result;
         }
 
-        private static Matrix<T> Addition<T>(Matrix<T> a, Matrix<T> b) where T : IMatrix<T>
-        {
-            if (a.M.GetLength(0) != b.M.GetLength(0) ||
-                a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
-
-            Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
-            for (int i = 0; i < a.GetLength(0); i++)
-                for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = result[i, j].Add(a[i, j], b[i, j]);
-            return result;
-        }
         #endregion
+
 
         #region operator - вычитание матриц
 
         public static Matrix<T> operator -(Matrix<T> matrix1, Matrix<T> matrix2)
         {
-            try
-            {
-                return Subtract<T>(matrix1, matrix2);
-            }
-            catch
-            {
-                return ISubtract<T>(matrix1, matrix2);
-            }
+            return Subtract(matrix1, matrix2);
         }
-        private static Matrix<TM> Subtract<TM>(Matrix<TM> a, Matrix<TM> b) where TM : struct
+        public static Matrix<T> Subtract(Matrix<T> a, Matrix<T> b)
         {
             if (a.M.GetLength(0) != b.M.GetLength(0) ||
                 a.M.GetLength(1) != b.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            Matrix<TM> result = new(a.GetLength(0), a.GetLength(1));
+            Matrix<T> result = new(a.GetLength(0), a.GetLength(1));
             for (int i = 0; i < a.GetLength(0); i++)
                 for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = (dynamic?)a[i, j] - (dynamic?)b[i, j];
-            return result;
-        }
-        private static Matrix<TM> ISubtract<TM>(Matrix<TM> a, Matrix<TM> b) where TM : class, IMatrix<TM>
-        {
-            if (a.M.GetLength(0) != a.M.GetLength(0) ||
-                a.M.GetLength(1) != a.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
-
-            Matrix<TM> result = new(a.GetLength(0), a.GetLength(1));
-            for (int i = 0; i < a.GetLength(0); i++)
-                for (int j = 0; j < a.GetLength(1); j++)
-                    result[i, j] = result[i, j].Subtract(a.M[i, j], b.M[i, j]);
+                    result[i, j] = a[i, j].Subtract(a[i, j], b[i, j]);
             return result;
         }
 
         #endregion
 
+        #region operator * умножение матриц
 
+        public static Matrix<T> operator *(Matrix<T> matrix1, Matrix<T> matrix2)
+        {
+            return Mul(matrix1, matrix2);
+        }
+        public static Matrix<T> Mul(Matrix<T> a, Matrix<T> b)
+        {
+            if (a.GetLength(1) != b.GetLength(0))
+                throw new IndexOutOfRangeException("Умножение невозможно, не корректные размеры матриц");
+
+            Matrix<T> result = new(a.GetLength(0), b.GetLength(1));
+            for (int i = 0; i < a.GetLength(0); i++)
+                for (int j = 0; j < b.GetLength(1); j++)
+                    for (int k = 0; k < b.GetLength(0); k++)
+                        if (k == 0) result[i, j] = a[i, j].Multiply(a[i, k], b[k, j]);
+                        else result[i, j] = a[i, j].Add(result[i, j], a[i, j].Multiply(a[i, k], b[k, j]));
+            return new Matrix<T>(result);
+        }
+
+        #endregion
+
+        #region operator ! транспонирование матрицы
+
+        public static Matrix<T> operator !(Matrix<T> matrix1)
+        {
+            return Transposition(matrix1);
+        }
+        public static Matrix<T> Transposition(Matrix<T> a)
+        {
+            Matrix<T> result = new (a.GetLength(1), a.GetLength(0));
+            for (int i = 0; i < a.GetLength(1); i++)
+                for (int j = 0; j < a.GetLength(0); j++)
+                    result[i, j] = a[j, i];
+            return new Matrix<T>(result);
+        }
+
+        #endregion
+
+        #region operator ^ обращение матрицы
+
+        public static Matrix<T> operator ~(Matrix<T> matrix)
+        {
+            return Invers switch
+            {
+                MethodInversion.Approximations => InversionApproximations(matrix),
+                MethodInversion.GaussSeidel => InversionGaussSeidel(matrix),
+                MethodInversion.Triangulation => InversionTriangulation(matrix),
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static Matrix<T> InversionApproximations(Matrix<T> a)
+        {
+            return new Matrix<T>();
+        }
+        public static Matrix<T> InversionGaussSeidel(Matrix<T> a)
+        {
+            return new Matrix<T>();
+        }
+        public static Matrix<T> InversionTriangulation(Matrix<T> a)
+        {
+            return new Matrix<T>();
+        }
+
+        #endregion
+
+        public bool CheckInRange(int? i = null, int? j = null)
+        {
+            if (i == null && j == null)
+                return false;
+            if (i != null && j != null)
+                return (i < 0 || i >= M.GetLength(0)) && ((j < 0 || j >= M.GetLength(0))) ? false : true;
+            if (i != null)
+                return j < 0 || j >= M.GetLength(0) ? false : true;
+            else
+                return i < 0 || i >= M.GetLength(0) ? false : true;
+        }
         private int GetLength(int v)
         {
             return M.GetLength(v);
         }
+
         public void FillInstance(T[,] matrix)
         {
             for (int i = 0; i < matrix.GetLength(0); i++)
                 for (int j = 0; j < matrix.GetLength(1); j++)
                     this.M[i, j] = matrix[i, j];
-        }
-        public void FillInstance(IMatrix<T>[,] matrix)
-        {
-            for (int i = 0; i < matrix.GetLength(0); i++)
-                for (int j = 0; j < matrix.GetLength(1); j++)
-                    this.M[i, j] = (T)matrix[i, j];
         }
 
         public override string ToString()

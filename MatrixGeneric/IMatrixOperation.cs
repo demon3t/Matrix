@@ -1,4 +1,4 @@
-﻿using Generic;
+﻿using MatrixGeneric;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MatrixGeneric
 {
-    public interface IMatrix<T>
+    public interface IMatrixOperation<T>
     {
         public T Add(T first, T second);
         public T Subtract(T first, T second);
