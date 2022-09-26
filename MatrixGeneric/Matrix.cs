@@ -80,7 +80,6 @@ namespace MatrixGeneric
 
         #endregion
 
-
         #region operator - вычитание матриц
 
         public static Matrix<T> operator -(Matrix<T> matrix1, Matrix<T> matrix2)
@@ -146,23 +145,15 @@ namespace MatrixGeneric
         {
             return Invers switch
             {
-                MethodInversion.Approximations => InversionApproximations(matrix),
-                MethodInversion.GaussSeidel => InversionGaussSeidel(matrix),
                 MethodInversion.Triangulation => InversionTriangulation(matrix),
                 _ => throw new NotImplementedException(),
             };
         }
 
-        public static Matrix<T> InversionApproximations(Matrix<T> a)
-        {
-            return new Matrix<T>();
-        }
-        public static Matrix<T> InversionGaussSeidel(Matrix<T> a)
-        {
-            return new Matrix<T>();
-        }
         public static Matrix<T> InversionTriangulation(Matrix<T> a)
         {
+            var result = new Matrix<T>(a.GetLength(0), a.GetLength(1));
+
             return new Matrix<T>();
         }
 
