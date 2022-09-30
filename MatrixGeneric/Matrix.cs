@@ -158,11 +158,23 @@ namespace MatrixGeneric
             T singleValue = GetSingleValue(a);
             T zeroValue = GetZeroValue(a);
 
-            return a;
+            Matrix<T> result = GetUnitMatrix(singleValue, zeroValue, a.M.GetLength(0));
+
+
+            return result;
         }
 
         #endregion
 
+
+        private static Matrix<T> GetUnitMatrix(T singleValue, T zeroValue, int size)
+        {
+            Matrix<T> matrix = new(size, size);
+            for (int i = 0; i < size; i++)
+                for (int j = 0; j < size; j++)
+                    matrix[i, j] = i == j ? singleValue : zeroValue;
+            return matrix;
+        }
         private static T GetSingleValue(Matrix<T> matrix)
         {
             for (int i = 0; i < matrix.M.GetLength(0); i++)
@@ -173,7 +185,7 @@ namespace MatrixGeneric
                     {
                         return matrix[i, j].Divide(matrix[i, j], matrix[i, j]);
                     }
-                    catch 
+                    catch
                     {
                         continue;
                     }
