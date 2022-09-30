@@ -155,11 +155,52 @@ namespace MatrixGeneric
             if (!a.CheckNullElements(a)) throw new ArgumentNullException(nameof(a));
             if (a.M.GetLength(0) != a.M.GetLength(1)) throw new Exception("Размеры посылаемых матриц не равны");
 
-            
+            T singleValue = GetSingleValue(a);
+            T zeroValue = GetZeroValue(a);
+
             return a;
         }
 
         #endregion
+
+        private static T GetSingleValue(Matrix<T> matrix)
+        {
+            for (int i = 0; i < matrix.M.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.M.GetLength(1); j++)
+                {
+                    try
+                    {
+                        return matrix[i, j].Divide(matrix[i, j], matrix[i, j]);
+                    }
+                    catch 
+                    {
+                        continue;
+                    }
+                }
+            }
+            throw new Exception("Не возможно найти единичное значение ");
+        }
+        private static T GetZeroValue(Matrix<T> matrix)
+        {
+            for (int i = 0; i < matrix.M.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.M.GetLength(1); j++)
+                {
+                    try
+                    {
+                        return matrix[i, j].Subtract(matrix[i, j], matrix[i, j]);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
+            throw new Exception("Не возможно найти нулевое значение ");
+        }
+
+
 
         public bool CheckNullElements(Matrix<T> matrix)
         {

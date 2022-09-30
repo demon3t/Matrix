@@ -14,50 +14,50 @@ Complex[,] cmpx1 = new Complex[,]
     { new Complex(15,98), new Complex(76,48), new Complex(15,61) }};
 
 Voltage[,] vv = new Voltage[,]
-    {{new Voltage(15), new Voltage(45), new Voltage(4) },
-    { new Voltage(45), new Voltage(34), new Voltage(7) },
-    { new Voltage(4), new Voltage(5), new Voltage(9) }};
+    {{new Voltage(15,0), new Voltage(0,45), new Voltage(0,4) },
+    { new Voltage(45,0), new Voltage(34,1), new Voltage(7,5) },
+    { new Voltage(0,4), new Voltage(5,4), new Voltage(9,2) }};
 
 
 
 Matrix<Voltage> matrix1 = vv;
-
-
-Console.WriteLine(matrix1 * matrix1);
+Console.WriteLine(~matrix1);
 
 
 public class Voltage : IMatrixOperation<Voltage>
 {
 
-    public Voltage(int value)
+    public Voltage(int value1, int value2 )
     {
-        Value = value;
+        Value1 = value1;
+        Value2 = value2;
     }
 
-    public int Value;
+    public int Value1;
+    public int Value2;
     public Voltage Add(Voltage first, Voltage second)
     {
-        return new Voltage(first.Value + second.Value);
+        return new Voltage(first.Value1 + second.Value1, first.Value2 + second.Value2);
     }
     public Voltage Subtract(Voltage first, Voltage second)
     {
-        return new Voltage(first.Value - second.Value);
+        return new Voltage(first.Value1 - second.Value1, first.Value2 - second.Value2);
     }
     public Voltage Multiply(Voltage first, Voltage second)
     {
-        return new Voltage(first.Value * second.Value);
+        return new Voltage(first.Value1 * second.Value1, first.Value2 * second.Value2);
     }
     public Voltage Divide(Voltage first, Voltage second)
     {
-        return new Voltage(first.Value / second.Value);
+        return new Voltage(first.Value1 / second.Value1, first.Value2 / second.Value2);
     }
     public override string ToString()
     {
-        return Value.ToString();
+        return $"({Value1}; {Value2})";
     }
     public override int GetHashCode()
     {
-        return Value ^ Value ^ Value;
+        return Value1 ^ Value2 ^ Value1;
     }
 }
 
